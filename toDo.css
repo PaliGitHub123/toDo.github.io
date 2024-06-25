@@ -93,5 +93,6 @@ hr{
     color: grey;
     text-decoration: line-through;
     transition: 0.25s;
+    list-style: none;
 }
 
