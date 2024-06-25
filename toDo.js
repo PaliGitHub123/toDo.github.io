@@ -1,40 +1,61 @@
-const input = document.getElementById("input");
-const ulCont = document.getElementById("list-container");
-const para = document.getElementById("alert"); 
+        const button = document.getElementById("add");
+        const body = document.getElementById("body");
 
-function add(){
-    if(input.value == ''){ 
-        para.innerHTML = "Eingabe fehlt";
-    }
-    else{
-        para.innerHTML = "";
-        let li = document.createElement("li");
-        let delButton = document.createElement("button");
-        delButton.innerText = "Delete"
-        li.innerHTML = input.value;
-        ulCont.appendChild(li);
-        li.appendChild(delButton);
-    }
-    input.value ="";
-    saveData();
-}
+        button.addEventListener("click", add);
 
-ulCont.addEventListener("click", function(e){
-    if(e.target.tagName === "LI"){
-        e.target.classList.toggle("checked");
-        saveData();
-    }
-    else if(e.target.tagName === "BUTTON"){
-        e.target.parentElement.remove();
-        saveData();
-    }
-}, false);
+        function add(){
+            let img = document.createElement("img");
+            img.src = "Circle_(transparent).svg";
+            img.style.width = "100px"; // Optional: set size for the image
+            img.style.height = "100px"; // Optional: set size for the image
+            body.appendChild(img);
 
-function saveData(){
-    localStorage.setItem("data", ulCont.innerHTML);
-}
+            var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
-function showTask(){
-    ulCont.innerHTML = localStorage.getItem("data");
-}
-showTask();
+            img.onmousedown = dragMouseDown;
+            img.ontouchstart = dragMouseDown; // Added for mobile
+
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                if (e.type === 'touchstart') {
+                    pos3 = e.touches[0].clientX;
+                    pos4 = e.touches[0].clientY;
+                    document.ontouchend = closeDragElement;
+                    document.ontouchmove = elementDrag;
+                } else {
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    document.onmouseup = closeDragElement;
+                    document.onmousemove = elementDrag;
+                }
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                if (e.type === 'touchmove') {
+                    pos1 = pos3 - e.touches[0].clientX;
+                    pos2 = pos4 - e.touches[0].clientY;
+                    pos3 = e.touches[0].clientX;
+                    pos4 = e.touches[0].clientY;
+                } else {
+                    pos1 = pos3 - e.clientX;
+                    pos2 = pos4 - e.clientY;
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                }
+                img.style.top = (img.offsetTop - pos2) + "px";
+                img.style.left = (img.offsetLeft - pos1) + "px";
+            }
+
+            function closeDragElement() {
+                if (event.type === 'touchend') {
+                    document.ontouchend = null;
+                    document.ontouchmove = null;
+                } else {
+                    document.onmouseup = null;
+                    document.onmousemove = null;
+                }
+            }
+        }
